@@ -34,12 +34,16 @@ abstract class ConnectionDelegate {
   /// Constraints of the delegate
   final PusherChannelOptions options;
 
-  ConnectionDelegate({required this.options});
+  ConnectionDelegate({required this.options, bool debugMode=true})
+  {
+    _debug_mode = debugMode;
+  }
 
   String? _socketId;
   bool _pongRecieved = false;
   bool _isDisconnectedManually = false;
   Timer? _timer;
+  bool _debug_mode = false;
 
   /// Socket id sent from the server after connection is established
   String? get socketId => _socketId;
@@ -75,7 +79,7 @@ abstract class ConnectionDelegate {
   Future<void> connect() async {
     _isDisconnectedManually = false;
     await cancelTimer();
-    print(ConnectionStatus.pending);
+    printDebug(ConnectionStatus.pending);
     passConnectionStatus(ConnectionStatus.pending);
   }
 
@@ -84,14 +88,14 @@ abstract class ConnectionDelegate {
   Future<void> disconnect() async {
     _isDisconnectedManually = true;
     await cancelTimer();
-    print(ConnectionStatus.disconnected);
+    printDebug(ConnectionStatus.disconnected);
     passConnectionStatus(ConnectionStatus.disconnected);
   }
 
   /// Ping a server when [activityDuration] exceeds
   @mustCallSuper
   void ping() {
-    print('pinging');
+    printDebug('pinging');
   }
 
   /// Send events
@@ -180,7 +184,7 @@ abstract class ConnectionDelegate {
   void onEventRecieved(data) async {
     if (_isDisconnectedManually) return;
     await onPong();
-    print(data);
+    printDebug(data);
     Map raw = jsonize(data);
     var name = raw['event']?.toString() ?? "";
     var payload = jsonize(raw['data']);
@@ -199,7 +203,7 @@ abstract class ConnectionDelegate {
   @mustCallSuper
   @protected
   Future<void> onPong() {
-    print('Got pong');
+    printDebug('Got pong');
     _pongRecieved = true;
     return resetTimer();
   }
@@ -208,7 +212,7 @@ abstract class ConnectionDelegate {
   @mustCallSuper
   @protected
   void checkPong() {
-    print('checking for pong');
+    printDebug('checking for pong');
     if (_pongRecieved) {
       _pongRecieved = false;
       ping();
@@ -234,16 +238,23 @@ abstract class ConnectionDelegate {
   Future<void> resetTimer() async {
     _timer?.cancel();
     _timer = null;
-    print('Timer is reset. Activity duration: $activityDuration');
+    printDebug('Timer is reset. Activity duration: $activityDuration');
     _timer = Timer(activityDuration, checkPong);
   }
 
   /// Cancelling a timer
   @mustCallSuper
   Future<void> cancelTimer() async {
-    print('Timer is canceled');
+    printDebug('Timer is canceled');
     _timer?.cancel();
     _timer = null;
+  }
+
+  void printDebug(Object? msg)
+  {
+    if (_debug_mode) {
+      print('ConnectionDelegate $msg');
+    }
   }
 
   @protected

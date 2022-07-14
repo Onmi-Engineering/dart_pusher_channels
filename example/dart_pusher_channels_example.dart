@@ -4,7 +4,7 @@ import 'package:dart_pusher_channels/dart_pusher_channels.dart';
 
 void main() {
   //Creating options to use the client over wss:// scheme
-  const options = PusherChannelOptions.wss(
+  final options = PusherChannelOptions.wss(
       host: 'my.domain.com',
       //By default the servers using pusher over wss://
       // work on 443 port. Specify the port according to your server.

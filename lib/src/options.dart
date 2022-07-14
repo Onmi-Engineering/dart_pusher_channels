@@ -23,7 +23,7 @@ class PusherChannelOptions {
   /// Host of a server
   final String _host;
 
-  const PusherChannelOptions(
+  PusherChannelOptions(
       {required this.scheme,
       required String host,
       this.cluster,
@@ -33,7 +33,7 @@ class PusherChannelOptions {
       required this.version})
       : _host = cluster == null ? host : 'ws-$cluster.$host';
 
-  const PusherChannelOptions.ws({
+  PusherChannelOptions.ws({
     String? cluster,
     required int? port,
     required String key,
@@ -49,7 +49,7 @@ class PusherChannelOptions {
             protocol: protocol,
             version: version);
 
-  const PusherChannelOptions.wss({
+  PusherChannelOptions.wss({
     String? cluster,
     required int? port,
     required String key,

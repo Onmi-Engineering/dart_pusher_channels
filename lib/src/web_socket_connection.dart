@@ -14,7 +14,7 @@ class WebSocketChannelConnectionDelegate extends ConnectionDelegate {
       this.eventFactory,
       this.onConnectionErrorHandler,
       this.reconnectTries = 4})
-      : super(options: options);
+      : super(options: options, debugMode: false);
 
   int _reconnectTries = 0;
 
@@ -104,7 +104,6 @@ class WebSocketChannelConnectionDelegate extends ConnectionDelegate {
   }
 
   void _onConnectionError(error, trace) {
-    print('connectionError');
     if (_reconnectTries == reconnectTries || isDisposed) return;
     _reconnectTries++;
     if (_reconnectTries == reconnectTries) {
